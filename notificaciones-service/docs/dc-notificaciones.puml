@@ -1,0 +1,61 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class Notificacion {
+  - id: UUID
+  - destinatario: String
+  - mensaje: String
+  - medio: MedioNotificacion
+  - estado: EstadoNotificacion
+  + enviarPor(canal: CanalNotificacion): void
+  + marcarComoCompletada(): void
+  + estaCompletada(): boolean
+}
+
+enum MedioNotificacion {
+  EMAIL
+  SMS
+  WHATSAPP
+}
+
+enum EstadoNotificacion {
+  PENDIENTE
+  COMPLETADA
+}
+
+interface CanalNotificacion {
+  + esCompatibleCon(medio: MedioNotificacion): boolean
+  + enviar(notificacion: Notificacion): void
+}
+
+class CanalEmail {
+  + esCompatibleCon(medio: MedioNotificacion): boolean
+  + enviar(notificacion: Notificacion): void
+}
+
+class CanalSms {
+  + esCompatibleCon(medio: MedioNotificacion): boolean
+  + enviar(notificacion: Notificacion): void
+}
+
+class CanalWhatsapp {
+  + esCompatibleCon(medio: MedioNotificacion): boolean
+  + enviar(notificacion: Notificacion): void
+}
+
+class ValidadorDestinatario {
+  + validar(destinatario: String, medio: MedioNotificacion): void
+}
+
+Notificacion --> MedioNotificacion
+Notificacion --> EstadoNotificacion
+Notificacion ..> CanalNotificacion : delega envío
+Notificacion ..> ValidadorDestinatario
+
+CanalNotificacion ..> Notificacion : usa
+CanalNotificacion ..> MedioNotificacion
+CanalEmail ..|> CanalNotificacion
+CanalSms ..|> CanalNotificacion
+CanalWhatsapp ..|> CanalNotificacion
+ValidadorDestinatario ..> MedioNotificacion
+@enduml
